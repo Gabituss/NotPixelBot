@@ -3,9 +3,11 @@ import json
 import time
 import random
 import config
-
+from setproctitle import setproctitle
 from config import url, accounts
 from convert import get
+
+setproctitle("notpixel")
 
 start = 410911
 image = get("")

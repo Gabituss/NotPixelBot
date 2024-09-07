@@ -102,6 +102,7 @@ def main(auth):
                 continue
             else:
                 break
+
         except IndexError:
             print(pos_image, y, x)
 

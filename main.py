@@ -77,7 +77,7 @@ def main(auth):
     claim(headers)
 
     size = len(image) * len(image[0])
-    order = [i in range(size)]
+    order = [i for i in range(size)]
     random.shuffle(order)
 
     for pos_image in order:

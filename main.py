@@ -79,7 +79,7 @@ def main(auth):
     size = len(image) * len(image[0])
     order = [i for i in range(size)]
     random.shuffle(order)
-#TODO booooo
+# booooo
     for pos_image in order:
         x, y = get_pos(pos_image, len(image[0]))
         time.sleep(0.05)

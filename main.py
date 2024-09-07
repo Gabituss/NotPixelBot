@@ -99,6 +99,6 @@ def main(auth, pos_image):
 pos = 0
 while True:
     for i in accounts:
-        pos = main(i, pos)
+        main(i, pos)
 
     time.sleep(config.WAIT + random.randint(5, 27))

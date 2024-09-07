@@ -86,11 +86,9 @@ def main(auth):
         try:
             if image[y][x] == ' ' or get_color(get_canvas_pos(x, y), headers) == c[image[y][x]]:
                 print(f"skip: {start_x + x - 1},{start_y + y - 1}")
-                pos_image = next_pixel(pos_image, size)
                 continue
 
             if paint(get_canvas_pos(x, y), c[image[y][x]], headers):
-                pos_image = next_pixel(pos_image, size)
                 continue
             else:
                 break

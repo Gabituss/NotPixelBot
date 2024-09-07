@@ -23,8 +23,12 @@ c = {
 
 
 def get_color(pixel, header):
+    query = requests.get(f"{url}/image/get/{str(pixel)}", headers=header)
+
+    if query.status_code == 401:
+        return -1
+
     try:
-        query = requests.get(f"{url}/image/get/{str(pixel)}", headers=header)
         return query.json()['pixel']['color']
     except KeyError:
         return "#000000"
@@ -79,12 +83,16 @@ def main(auth):
     size = len(image) * len(image[0])
     order = [i for i in range(size)]
     random.shuffle(order)
-# booooo
+
     for pos_image in order:
         x, y = get_pos(pos_image, len(image[0]))
         time.sleep(0.05)
         try:
-            if image[y][x] == ' ' or get_color(get_canvas_pos(x, y), headers) == c[image[y][x]]:
+            color = get_color(get_canvas_pos(x, y), headers)
+            if color == -1:
+                break
+
+            if image[y][x] == ' ' or color == c[image[y][x]]:
                 print(f"skip: {start_x + x - 1},{start_y + y - 1}")
                 continue
 

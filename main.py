@@ -81,7 +81,7 @@ def main(auth, pos_image):
     good = True
     while good:
         x, y = get_pos(pos_image, len(image[0]))
-
+        time.sleep(0.05)
         try:
             if image[y][x] == ' ' or get_color(get_canvas_pos(x, y), headers) == c[image[y][x]]:
                 print(f"skip: {start_x + x - 1},{start_y + y - 1}")

@@ -3,13 +3,14 @@ import json
 import time
 import random
 import config
+import logging
+
 from setproctitle import setproctitle
 from config import url, accounts
 from convert import get
 
 setproctitle("notpixel")
 
-start = 425927
 image = get("")
 
 c = {
@@ -18,57 +19,81 @@ c = {
     '*': "#ffffff"
 }
 
+
 def get_color(pixel, header):
     query = requests.get(f"{url}/image/get/{str(pixel)}", headers=header)
     return query.json()['pixel']['color']
 
 
-def main(auth, savep):
-    next_pixel, x, y = savep
-    headers = {
-        'authorization': auth
+def claim(header):
+    requests.get(f"{url}/mining/claim", headers=header)
+
+
+def get_pixel(x, y):
+    return y * 1000 + x + 1
+
+
+def get_pos(pixel):
+    return pixel % 1000, pixel // 1000
+
+
+def get_canvas_pos(x, y):
+    return get_pixel(start_x + x - 1, start_y + y - 1)
+
+
+start_x = 926
+start_y = 425
+
+
+def next_pixel(pos_image, size):
+    return (pos_image + 1) % size
+
+
+def paint(canvas_pos, color, header):
+    data = {
+        "pixelId": canvas_pos,
+        "newColor": color
     }
-    g = requests.get(f"{url}/mining/claim", headers=headers)
 
-    def next(x, y, next_pixel):
-        if x < len(image[0]) - 1:
-            x += 1
-            next_pixel += 1
-        elif y < len(image) - 1:
-            x = 0
-            y += 1
-            next_pixel += -len(image[0]) + 1001
-        else:
-            x = 0
-            y = 0
-            next_pixel -= len(image[0]) - len(image)
-            time.sleep(180 + random.randint(60, 180))
-        return x, y, next_pixel
+    response = requests.post(f"{url}/repaint/start", data=json.dumps(data), headers=header)
+    x, y = get_pos(canvas_pos)
 
-    while True:
-        print(y, x)
-        if image[y][x] == ' ' or get_color(next_pixel, headers) == c[image[y][x]]:
-            print("skip")
-            time.sleep(config.DELAY + random.uniform(0.005, 0.007))
-            x, y, next_pixel = next(x, y, next_pixel)
+    if response.status_code == 400:
+        print("Out of energy")
+        return False
+
+    print(f"paint: {x},{y}")
+    return True
+
+
+def main(auth, pos_image):
+    headers = {'authorization': auth}
+
+    claim(headers)
+
+    size = len(image) * len(image[0])
+
+    good = True
+    while good:
+        x, y = get_pos(pos_image)
+
+        if image[y][x] == ' ' or get_color(get_canvas_pos(x, y), headers) == c[image[y][x]]:
+            print(f"skip: {start_x + x - 1},{start_y + y - 1}")
+            pos_image = next_pixel(pos_image, size)
             continue
-        data = {
-            "pixelId": next_pixel,
-            "newColor": c[image[y][x]]
-        }
-        response = requests.post(f'{url}/repaint/start', data=json.dumps(data), headers=headers)
-        if response.status_code == 400:
-            print("sleep")
-            return next_pixel, x, y
-        else:
-            print(response.text)
-            x, y, next_pixel = next(x, y, next_pixel)
+
+        if paint(get_canvas_pos(x, y), c[image[y][x]], headers):
+            pos_image = next_pixel(pos_image, size)
+            continue
+
+        good = False
+
+    return pos_image
 
 
-save = start
-xs = 0
-ys = 0
+pos = 0
 while True:
     for i in accounts:
-        save, xs, ys = main(i, [save, xs, ys])
+        pos = main(i, pos)
+
     time.sleep(config.WAIT + random.randint(5, 27))

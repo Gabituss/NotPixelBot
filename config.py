@@ -1,4 +1,4 @@
-url = "https://notpx.app/api/v1/"
+url = "https://notpx.app/api/v1"
 
 accounts = [
     "initData user=%7B%22id%22%3A1431751865%2C%22first_name%22%3A%22%D0%A1%D0%B0%D0%BC%D0%B0%D1%82%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22samat_que%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=7167255971921566636&chat_type=sender&auth_date=1725640632&hash=ba0523b1c46d3f8059d39a159dc2d97fedaf02227f81151e914947d9871ec4a5",

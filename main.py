@@ -9,15 +9,14 @@ from convert import get
 
 setproctitle("notpixel")
 
-start = 410911
+start = 425927
 image = get("")
 
 c = {
     '#': "#000000",
-    '.': "#FFFFFF",
-    '*': "#000000"
+    '.': "#3690EA",
+    '*': "#ffffff"
 }
-
 
 def get_color(pixel, header):
     query = requests.get(f"{url}/image/get/{str(pixel)}", headers=header)
@@ -38,7 +37,7 @@ def main(auth, savep):
         elif y < len(image) - 1:
             x = 0
             y += 1
-            next_pixel += -len(image[0]) + 999
+            next_pixel += -len(image[0]) + 1001
         else:
             x = 0
             y = 0
@@ -57,13 +56,12 @@ def main(auth, savep):
             "pixelId": next_pixel,
             "newColor": c[image[y][x]]
         }
-        response = requests.post('https://notpx.app/api/v1/repaint/start', data=json.dumps(data), headers=headers)
+        response = requests.post(f'{url}/repaint/start', data=json.dumps(data), headers=headers)
         if response.status_code == 400:
             print("sleep")
             return next_pixel, x, y
         else:
             print(response.text)
-            print("OK", response.json())
             x, y, next_pixel = next(x, y, next_pixel)
 
 

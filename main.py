@@ -23,8 +23,11 @@ c = {
 
 
 def get_color(pixel, header):
-    query = requests.get(f"{url}/image/get/{str(pixel)}", headers=header)
-    return query.json()['pixel']['color']
+    try:
+        query = requests.get(f"{url}/image/get/{str(pixel)}", headers=header)
+        return query.json()['pixel']['color']
+    except KeyError:
+        return "#000000"
 
 
 def claim(header):
@@ -58,7 +61,7 @@ def paint(canvas_pos, color, header):
     }
 
     response = requests.post(f"{url}/repaint/start", data=json.dumps(data), headers=header)
-    x, y = get_pos(canvas_pos, len(image[0]))
+    x, y = get_pos(canvas_pos, 1000)
 
     if response.status_code == 400:
         print("Out of energy")

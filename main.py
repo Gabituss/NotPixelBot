@@ -71,15 +71,16 @@ def paint(canvas_pos, color, header):
     return True
 
 
-def main(auth, pos_image):
+def main(auth):
     headers = {'authorization': auth}
 
     claim(headers)
 
     size = len(image) * len(image[0])
+    order = [i in range(size)]
+    random.shuffle(order)
 
-    good = True
-    while good:
+    for pos_image in order:
         x, y = get_pos(pos_image, len(image[0]))
         time.sleep(0.05)
         try:
@@ -91,17 +92,14 @@ def main(auth, pos_image):
             if paint(get_canvas_pos(x, y), c[image[y][x]], headers):
                 pos_image = next_pixel(pos_image, size)
                 continue
+            else:
+                break
         except IndexError:
             print(pos_image, y, x)
 
-        good = False
 
-    return pos_image
-
-
-pos = 0
 while True:
     for i in accounts:
-        main(i, pos)
+        main(i)
 
     time.sleep(config.WAIT + random.randint(5, 27))

@@ -70,6 +70,8 @@ def paint(canvas_pos, color, header):
     if response.status_code == 400:
         print("Out of energy")
         return False
+    if response.status_code == 401:
+        return -1
 
     print(f"paint: {x},{y}")
     return True
@@ -98,7 +100,12 @@ def main(auth):
                 print(f"skip: {start_x + x - 1},{start_y + y - 1}")
                 continue
 
-            if paint(get_canvas_pos(x, y), c[image[y][x]], headers):
+            result = paint(get_canvas_pos(x, y), c[image[y][x]], headers)
+            if result == -1:
+                print("DEAD :(")
+                print(headers["authorization"])
+                break
+            elif result:
                 continue
             else:
                 break

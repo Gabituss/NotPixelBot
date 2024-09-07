@@ -88,7 +88,7 @@ def main(auth):
 
     for pos_image in order:
         x, y = get_pos(pos_image, len(image[0]))
-        time.sleep(0.05)
+        time.sleep(0.05 + random.uniform(0.01, 0.1))
         try:
             color = get_color(get_canvas_pos(x, y), headers)
             if color == -1:

@@ -90,6 +90,8 @@ def main(auth):
         try:
             color = get_color(get_canvas_pos(x, y), headers)
             if color == -1:
+                print("DEAD :(")
+                print(headers["authorization"])
                 break
 
             if image[y][x] == ' ' or color == c[image[y][x]]:

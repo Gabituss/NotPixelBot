@@ -1,3 +1,5 @@
+from ast import Index
+
 import requests
 import json
 import time
@@ -33,8 +35,8 @@ def get_pixel(x, y):
     return y * 1000 + x + 1
 
 
-def get_pos(pixel):
-    return pixel % 1000, pixel // 1000
+def get_pos(pixel, size_x):
+    return pixel % size_x, pixel // size_x
 
 
 def get_canvas_pos(x, y):
@@ -56,7 +58,7 @@ def paint(canvas_pos, color, header):
     }
 
     response = requests.post(f"{url}/repaint/start", data=json.dumps(data), headers=header)
-    x, y = get_pos(canvas_pos)
+    x, y = get_pos(canvas_pos, len(image[0]))
 
     if response.status_code == 400:
         print("Out of energy")
@@ -75,16 +77,19 @@ def main(auth, pos_image):
 
     good = True
     while good:
-        x, y = get_pos(pos_image)
+        x, y = get_pos(pos_image, len(image[0]))
 
-        if image[y][x] == ' ' or get_color(get_canvas_pos(x, y), headers) == c[image[y][x]]:
-            print(f"skip: {start_x + x - 1},{start_y + y - 1}")
-            pos_image = next_pixel(pos_image, size)
-            continue
+        try:
+            if image[y][x] == ' ' or get_color(get_canvas_pos(x, y), headers) == c[image[y][x]]:
+                print(f"skip: {start_x + x - 1},{start_y + y - 1}")
+                pos_image = next_pixel(pos_image, size)
+                continue
 
-        if paint(get_canvas_pos(x, y), c[image[y][x]], headers):
-            pos_image = next_pixel(pos_image, size)
-            continue
+            if paint(get_canvas_pos(x, y), c[image[y][x]], headers):
+                pos_image = next_pixel(pos_image, size)
+                continue
+        except IndexError:
+            print(pos_image, y, x)
 
         good = False
 

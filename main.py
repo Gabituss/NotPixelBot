@@ -46,8 +46,8 @@ def get_canvas_pos(x, y):
     return get_pixel(start_x + x - 1, start_y + y - 1)
 
 
-start_x = 926
-start_y = 425
+start_x = 920
+start_y = 386
 
 
 def next_pixel(pos_image, size):
@@ -100,4 +100,5 @@ while True:
     for i in accounts:
         main(i)
 
+    print("SLEEEP")
     time.sleep(config.WAIT + random.randint(5, 27))
